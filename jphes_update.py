@@ -3,14 +3,11 @@ failed_jphes_ipsl_members = []
 # jphes_ipsl_members = {}
 
 try:
-    conn = psycopg2.connect("dbname=jphesdump23feb user=dhis  password=dhis")
+    conn = psycopg2.connect("dbname='jphes' user='username' host='localhost' password='password'")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM jphes_ipsl_members")
     rows = cursor.fetchall()
-    print "test step"
-    print len(rows)
-    size = len(rows)
-    if size > 0:
+    if len(rows) > 0:
         column_names = [desc[0] for desc in cursor.description]
         for row in rows:
             jphes_ipsl_members = dict(zip(column_names, row))
@@ -52,7 +49,14 @@ try:
                                        pde_data['dataelementid'], jphes_ipsl_members['periodid']))
                         conn.commit()
                         print 'Data Updated'
-
+                        # data_values = cursor.fetchall()
+                        # if data_values:
+                        #     data_values_column_names = [desc[0] for desc in cursor.description]
+                        #     for data_value in data_values:
+                        #         data_value_data = dict(zip(data_values_column_names, data_value))
+                        #         print data_value_data
+                        # else:
+                        #     print 'No DATA VALUE for jphes_ipsl_member datimcode: ', jphes_ipsl_members['datimcode']
                 else:
                     failed_jphes_ipsl_members.append(jphes_ipsl_members['datimcode'])
                     print 'No PROGRAM DATA ELEMENTS for jphes_ipsl_member datimcode: ', jphes_ipsl_members['datimcode']
@@ -60,4 +64,4 @@ try:
     print 'Failed jphes_ipsl_members: ', failed_jphes_ipsl_members
 except Exception, e:
     print 'Error: ', e
-    print "I am unable to connect to the database JPHESlive"
+    print "I am unable to connect to the database JPHES"
