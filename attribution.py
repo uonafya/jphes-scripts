@@ -3,6 +3,7 @@ import psycopg2
 import pandas as pd
 import numpy as np
 
+#Defaults
 nutrition_dataelementgroupid=2046015
 mch_dataelementgroupid=2046012
 monthly_periodtypeid=3
@@ -11,8 +12,8 @@ mch_filter='MCH'
 
 count_executions=[]
 
-
-conn_str = "host={} dbname={} port={} user={} password={}".format("localhost", "port", "database", "user", "password")
+# DB Connection
+conn_str = "host={} port={} dbname={} user={} password={}".format("localhost","5432", "db_name", "user", "password")
 conn=None
 try:
     conn = psycopg2.connect(conn_str)
@@ -20,19 +21,21 @@ try:
     
     ipsl_members=pd.read_sql("select * from jphes_ipsl", con=conn)
     
-    #select data elements for a specific Program
+    #select data elements for a specific Program - align the filter for programs and dataelementgroup
     dataelements=pd.read_sql("select dataelementid from dataelementgroupmembers \
                              where dataelementgroupid={}".format(mch_dataelementgroupid), con=conn)
     
     #filter orgunits for a specific program
     ipsl_orgunits=ipsl_members[ipsl_members.programs.str.contains(mch_filter,case=False)]
     
+    # Filter by Partner(if need be)
+    #ipsl_orgunits=ipsl_orgunits[ipsl_orgunits.mechanism_name.str.contains("Afya Uzazi", case=False)]
     #filter by quarter
-    ipsl_orgunits=ipsl_orgunits[ipsl_orgunits.period.str.contains("Q1", case=False)]
-    
+    ipsl_orgunits=ipsl_orgunits[ipsl_orgunits.period.str.contains("2018Q2", case=False)]
+
     #period
     periods=pd.read_sql("select periodid,startdate, enddate from period \
-                        where startdate>='2016-10-1' and enddate<='2016-12-31' \
+                        where startdate>='2018-1-1' and enddate<='2018-3-31' \
                         and periodtypeid={}".format(monthly_periodtypeid), con=conn)
     
     
